@@ -51,8 +51,8 @@ This was given to me as technical homework so the design and behavior decisions 
 - Another option is to record the data examples and then train the base model.
    - This is better fit for when there's a lot of output possibilities and some clear patterns that the AI model is missing.
    - At this time I don't see reason to think this is good approach. Adding examples to the AI prompt is portable and cheap to implement. Training has more overhead and takes longer.
-   - My understanding is that the current recommendation is that you train models when you want to alter their behavior, which doesn't seem to be needed here. We could potentially switch from GPT-4 to GPT-3 (`gpt-3.5-turbo-instruct`) and see a degradation
-     in quality which might be bridged by training it with GPT-4's answers. If GPT-3 does worse, the first approach to try is to increase redundancies in the prompt and bring important elements towards the end of the prompt. Being shorter and concise helps, as does splitting up the problem into smaller steps.
+   - My understanding is that the current recommendation is that you train models when you want to alter their behavior, which doesn't seem to be needed here. We could potentially switch from GPT-4 to a lower cost model like GPT-3 (`gpt-3.5-turbo-instruct`) or even a model from a different provider and see a degradation
+     in quality which might be bridged by training it with GPT-4's answers. If the cheaper model does worse, the first approach to try is to increase redundancies in the prompt and bring important elements towards the end of the prompt. Being shorter and concise helps, as does splitting up the problem into smaller steps.
    - Given the current example data, GPT-4 does just fine, and spending a premium on GPT-4 is going to be a better use of company money than paying an engineer to train a cheaper model unless there is very substantial usage.
 
   
