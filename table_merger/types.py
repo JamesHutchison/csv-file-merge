@@ -1,0 +1,2 @@
+TemplateColName = str
+IncomingColName = str
