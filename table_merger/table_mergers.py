@@ -225,8 +225,9 @@ class TableMergeOperation:
 
         reader = csv.DictReader(self.in_file)
 
-        for row in reader:
+        for row_num, row in enumerate(reader):
             transformed_row = {}
+            row_errors = []
             for template_col, incoming_col in self.actual_column_mapping.items():
                 if incoming_col not in row:
                     self.errors.append(f"Column {incoming_col} not found in input data.")
@@ -245,11 +246,13 @@ class TableMergeOperation:
                     )
                     transformed_row[template_col] = transformed_value
                 except Exception as exc:
-                    self.errors.append(
-                        f"Error applying transformation for column {template_col}. Reason: {exc}"
+                    row_errors.append(
+                        f"Row: {row_num + 1} - Error applying transformation for column {template_col}. Reason: {exc}"
                     )
-
-            yield transformed_row
+            if row_errors:
+                self.errors.extend(row_errors)
+            else:
+                yield transformed_row
 
 
 class TableMergerManager:
