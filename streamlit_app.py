@@ -158,7 +158,16 @@ def main() -> None:
         # Single Apply button for all transformations
         if st.button("Apply transformations and add data", key="apply_transforms_and_add_data"):
             active_operation.assign_column_transformations(user_transformations_dict)
+            # if this errors then the file is partially written, which isn't great
+            # but preference of how to handle them depends on the use case
+            # alternatively one could have a before / after state
+            # rather than simply applying rows to a file
             write_to_streamlit(active_operation, active_operation.apply())
+            if active_operation.errors:
+                # alert to user
+                st.error("There were errors applying the transformations!")
+                for error in active_operation.errors:
+                    st.error(error)
             ready_next_file()
 
     # Prepare data for Streamlit table
@@ -240,16 +249,6 @@ def write_to_streamlit(operation: TableMergeOperation, rows: Iterable[dict]):
     column_mapping = operation.actual_column_mapping
     assert column_mapping
 
-    # Read the CSV data using DictReader and map the columns
-    # mapped_rows = []
-    # reader = DictReader(operation.in_file)
-    # for row in reader:
-    #     mapped_row = {
-    #         template_col: row[incoming_col]
-    #         for template_col, incoming_col in column_mapping.items()
-    #     }
-    #     mapped_rows.append(mapped_row)
-
     table_data = st.session_state.get("table_data") or []
     template_column_names = [col.name for col in operation.template_column_info]
     if not table_data:
@@ -281,27 +280,6 @@ def apply_column_mapping(
     user_selected_mapping: dict[TemplateColName, IncomingColName],
 ) -> None:
     operation.assign_column_mapping(user_selected_mapping)
-
-
-# def apply_column_header(template_columns: list[str]) -> None:
-#     if not template_columns:
-#         return
-#     if st.session_state["dictwriter"] is None:
-#         dictwriter = DictWriter(st.session_state["output_file"], fieldnames=template_columns)
-#         st.session_state["dictwriter"] = dictwriter
-
-
-# def write_input_to_output(operation: TableMergeOperation) -> None:
-#     if st.session_state["dictwriter"] is None:
-#         return
-#     if not operation.errors:
-#         dr = DictReader(operation.in_file)
-#         dw: DictWriter = st.session_state["dictwriter"]
-#         for row in dr:
-#             dw.writerow(row)
-#     else:
-#         for error in operation.errors:
-#             st.error(error)
 
 
 if __name__ == "__main__":
