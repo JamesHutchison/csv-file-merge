@@ -20,6 +20,8 @@ from table_merger.util import (
     parse_and_attempt_repair_for_output,
 )
 
+MAX_ROW_SAMPLES = 10
+
 
 class ColumnInfo(pydantic.BaseModel):
     name: str
@@ -280,7 +282,13 @@ class TableMergerManager:
         try:
             reader = csv.DictReader(incoming_file)
             columns = reader.fieldnames
-            sample_rows = [row for row in reader]
+            sample_rows = []
+            row_counter = 0
+            for row in reader:
+                sample_rows.append(row)
+                row_counter += 1
+                if row_counter >= MAX_ROW_SAMPLES:
+                    break
             if not columns:
                 return []
             output_col_tasks = []
